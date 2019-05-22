@@ -1,0 +1,31 @@
+package HH23;
+
+import java.awt.Container;
+
+import javax.swing.JFrame;
+
+public class Game {
+
+	public static void main(String[] args) {
+
+		JFrame jf = new JFrame();
+
+		SaoLei Panel = new SaoLei(20, 30);
+
+		int[] a = Panel.returnSize();
+
+		jf.setSize(a[0], a[1]);
+
+		jf.setTitle("扫雷1.0 ----96944826545467426");
+
+		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		Container c = jf.getContentPane();
+
+		c.add(Panel);
+
+		jf.setVisible(true);
+
+	}
+
+}
