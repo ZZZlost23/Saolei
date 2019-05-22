@@ -1,0 +1,260 @@
+package fff;
+import javax.swing.BorderFactory;
+
+import javax.swing.JLabel;
+
+import javax.swing.JPanel;
+
+import java.awt.Color;
+
+import java.awt.event.ActionEvent;
+
+import java.awt.event.ActionListener;
+
+
+
+public class SaoLei extends JPanel {
+
+	private static final long serialVersionUID = 1L;
+
+	private int rows;
+
+	private int cols;
+
+	private int bombCount;
+
+	private final int BLOCKWIDTH = 20;
+
+	private final int BLOCKHEIGHT = 20;
+
+	private JLabel[][] labels;
+
+	private  Button[][] buttons;
+
+	private final int[][] offset = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
+
+	public SaoLei(int rows, int cols) {
+
+		this.rows = rows;
+
+		this.cols = cols;
+
+		this.bombCount = rows * cols / 10;
+
+		this.labels = new JLabel[rows][cols];
+
+		this.buttons = new Button[rows][cols];
+
+		this.setLayout(null);
+
+		this.initButtons();
+
+		this.initLabels();
+
+	}
+
+	private void initLabels(){
+
+		for (int i = 0; i < this.rows; i++) {
+
+			for (int j = 0; j < this.cols; j++) {
+
+				JLabel label = new JLabel("", JLabel.CENTER);
+
+				label.setBounds(j * BLOCKWIDTH, i * BLOCKHEIGHT, BLOCKWIDTH, BLOCKHEIGHT);
+
+				label.setBorder(BorderFactory.createLineBorder(Color.black));
+
+				label.setOpaque(true);
+
+				label.setBackground(Color.white);
+
+				this.add(label);
+
+				labels[i][j] = label;
+			}
+
+		}
+
+		randomBomb();
+
+		writeNumber();
+
+	}
+
+
+
+
+	private void randomBomb() {
+
+		for (int i = 0; i < this.bombCount; i++) {
+
+			int rRow = (int) (Math.random() * this.rows);
+			int rCol = (int) (Math.random() * this.cols);
+
+			this.labels[rRow][rCol].setText("*");
+
+			this.labels[rRow][rCol].setBackground(Color.yellow);
+
+			this.labels[rRow][rCol].setForeground(Color.RED);
+
+		}
+
+	}
+
+
+	private void writeNumber() {
+
+		for (int  i = 0; i < this.rows; i++) {
+
+			for (int j = 0; j < this.cols; j++) {
+
+				if (labels[i][j].getText().equals("*")) {
+
+					continue;
+
+				}
+
+				int bombCount = 0;
+
+				for (int[] off: offset) {
+
+					int row = i + off[1];
+
+					int col = j + off[0];
+
+
+					if (verify(row, col) && labels[row][col].getText().equals("*")) {
+
+						bombCount++;
+
+					}
+
+				}
+
+				if (bombCount > 0) {
+
+					labels[i][j].setText(String.valueOf(bombCount));
+
+				}
+
+			}
+
+		}
+
+	}
+
+
+
+	private boolean verify(int row, int col) {
+
+		return row >= 0 && row < this.rows && col >= 0 && col < this.cols;
+
+	}
+
+
+
+	private void initButtons() {
+
+
+		for (int i = 0; i < rows; i++) {
+
+			for (int j = 0; j < cols; j++) {
+
+				Button btn = new Button();
+
+
+				btn.setBounds(j * BLOCKWIDTH, i * BLOCKHEIGHT, BLOCKWIDTH, BLOCKHEIGHT);
+
+				this.add(btn);
+
+				buttons[i][j] = btn;
+
+				btn.row = i;
+
+				btn.col = j;
+
+				btn.addActionListener(new ActionListener() {
+
+
+
+					@Override
+
+					public void actionPerformed(ActionEvent e) {
+
+						// TODO Auto-generated method stub
+
+						open((Button) e.getSource());
+
+					}});
+
+			}
+
+		}
+
+	}
+
+
+	private void open(Button btn) {
+
+		btn.setVisible(false);
+
+		switch (labels[btn.row][btn.col].getText()) {
+
+
+			case "*" :
+
+				for (int i = 0; i < rows; i++) {
+
+					for (int j = 0; j < cols; j++) {
+
+						buttons[i][j].setVisible(false);
+
+					}
+
+				}
+
+				break;
+
+
+			case "" :
+
+				for (int[] off: offset) {
+
+					int newRow = btn.row + off[0];
+
+					int newCol = btn.col + off[1];
+
+					if (verify(newRow, newCol)) {
+
+						Button sButton = buttons[newRow][newCol];
+
+						if (sButton.isVisible()) {
+
+							open(sButton);
+
+						}
+
+					}
+
+				}
+
+			default:
+
+		}
+
+	}
+
+
+
+
+	public int[] returnSize() {
+
+		int[] a = {this.cols * BLOCKWIDTH + 20, this.rows * BLOCKHEIGHT + 40};
+
+		return a;
+
+	}
+
+}
+
